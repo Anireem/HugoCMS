@@ -1,5 +1,11 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,13 +26,14 @@ public class MyFiles {
         }
     }
 
+
+
     public void renameFiles(File folder, String regex, String replacement) {
         addAllFilesFromFolder(folder);
         for (File file : files) {
             renameFile(file, "---", "-");
         }
     }
-
     private void renameFile(File file, String regex, String replacement) {
         String newName = file.getName().replaceAll(regex, replacement);
         Path source = Paths.get(file.getAbsolutePath());

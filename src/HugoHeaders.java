@@ -29,11 +29,16 @@ public class HugoHeaders {
                     boolean isHeader = true;
                     StringBuilder newContent = new StringBuilder();
 
-                    newContent.append(firstLine);
+                    newContent.append(firstLine).append("\n");
                     while ((line = reader.readLine()) != null) {
                         if (line.equals("---")) isHeader = false;
                         if (isHeader) {
-                            if (line.contains(property + ":")) line = property + ": " + newValue;
+                            if (line.contains(property)) {
+                                String newLine = property + ": " + newValue;
+                                if (!line.equals(newLine)) {
+                                    line = newLine;
+                                }
+                            }
                         }
                         newContent.append(line).append("\n");
                     }
@@ -42,7 +47,7 @@ public class HugoHeaders {
                     fileWriter.write(newContent.toString());
                     fileWriter.close();
                 } else {
-                    return;
+                    continue;
                 }
             } catch (FileNotFoundException e) {
                 System.out.println("FileNotFoundException");
