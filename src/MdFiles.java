@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -73,7 +74,6 @@ public class MdFiles {
 
             try {
                 Files.move(fileSource, fileDestination);
-//                replaceImageRefererence(fileDestination.toFile());
                 for (File image : imagesFromMd) {
                     Path imageSource = Paths.get(image.getCanonicalPath());
                     Path imageDestination = Paths.get(
@@ -82,35 +82,17 @@ public class MdFiles {
                     Files.move(imageSource, imageDestination);
                 }
             } catch (IOException e) {
-                System.out.println("exception");
+                System.out.println("Can't copy file: " + ((NoSuchFileException) e).getFile());
             }
 
         }
     }
 
     private static void replaceImageRefererence(File file) {
-//        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                if (line.startsWith("![")) {
-//                    String pathToImage = line.split("]")[1];
-//                    pathToImage = pathToImage.substring(1, pathToImage.length() -1);
-//                    File image = Paths.get(
-//                            file.getAbsolutePath() + "\\..\\" + pathToImage
-//                    ).toFile();
-//
-//                } else {
-//                    continue;
-//                }
-//            }
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//      try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-//          String line;
-//          while ((line = reader.readLine()) != null) {
+        try (
+                BufferedReader reader = new BufferedReader(new FileReader(file));
+                FileWriter fileWriter = new FileWriter(file, false)
+        ) {
             String line;
             StringBuilder newContent = new StringBuilder();
             while ((line = reader.readLine()) != null) {
@@ -119,17 +101,13 @@ public class MdFiles {
                     line = split[split.length - 1];
                     String imageName = line.replace(")", "");
                     line = "![" + imageName + "](" + imageName + ")";
-//                    line = line.replaceAll("../", "");
-//                    line.replaceAll("_resouces", "");
                 }
                 newContent.append(line).append("\n");
             }
-            FileWriter fileWriter = new FileWriter(file, false);
 
             fileWriter.write(newContent.toString());
-            fileWriter.close();
         } catch (IOException e) {
-            System.out.println("IOException");
+            throw new RuntimeException();
         }
     }
 
@@ -153,8 +131,6 @@ public class MdFiles {
                     ).toFile();
 
                     images.add(image);
-                } else {
-                    continue;
                 }
             }
         } catch (IOException e) {
