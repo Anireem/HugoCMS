@@ -8,8 +8,8 @@ import java.io.IOException;
 public class HugoHeaders {
 
     public void addDefaultHeadersIfNotExist(File folder) {
-        MyFiles.addAllFilesFromFolder(folder);
-        for (File file : MyFiles.files) {
+        MdFiles.addAllFilesFromFolder(folder);
+        for (File file : MdFiles.files) {
             if (!headerExist(file) && file.getName().endsWith(".md")) {
                 addDefaultHeader(file);
             }
@@ -17,9 +17,9 @@ public class HugoHeaders {
     }
 
     public void setProperty(File folder, String property, String newValue) {
-        MyFiles.addAllFilesFromFolder(folder);
+        MdFiles.addAllFilesFromFolder(folder);
 
-        for (File file : MyFiles.files) {
+        for (File file : MdFiles.files) {
 
             try (BufferedReader reader = new BufferedReader(new FileReader(file));) {
                 String firstLine = reader.readLine();
@@ -74,8 +74,10 @@ public class HugoHeaders {
     }
 
     private void addDefaultHeader(File file) {
-        try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        try (
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+                FileWriter fileWriter = new FileWriter(file, false);
+            ) {
             String line;
             StringBuilder newContent = new StringBuilder();
             newContent
@@ -92,10 +94,7 @@ public class HugoHeaders {
                     .append("\n");
             while ((line = bufferedReader.readLine()) != null)
                 newContent.append(line).append("\n");
-
-            FileWriter fileWriter = new FileWriter(file, false);
             fileWriter.write(newContent.toString());
-            fileWriter.close();
         } catch (IOException e) {
             System.out.println("IOException");
         }
