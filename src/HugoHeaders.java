@@ -76,7 +76,6 @@ public class HugoHeaders {
     private void addDefaultHeader(File file) {
         try (
                 BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-                FileWriter fileWriter = new FileWriter(file, false);
             ) {
             String line;
             StringBuilder newContent = new StringBuilder();
@@ -94,7 +93,9 @@ public class HugoHeaders {
                     .append("\n");
             while ((line = bufferedReader.readLine()) != null)
                 newContent.append(line).append("\n");
-            fileWriter.write(newContent.toString());
+            FileWriter writer = new FileWriter(file, false);
+            writer.write(newContent.toString());
+            writer.close();
         } catch (IOException e) {
             System.out.println("IOException");
         }

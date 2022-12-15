@@ -60,13 +60,11 @@ public class MdFiles {
             List<File> imagesFromMd = getImagesFromMd(file);
             if (imagesFromMd.isEmpty()) continue;
 
-
             File folder = new File(file.getAbsolutePath().replaceAll(".md", ""));
             if (!folder.exists()) {
                 folder.mkdirs();
             }
 
-            List<File> imagesFromMd1 = getImagesFromMd(file);
             replaceImageRefererence(file);
 
             Path fileSource = Paths.get(file.getAbsolutePath());
@@ -91,7 +89,6 @@ public class MdFiles {
     private static void replaceImageRefererence(File file) {
         try (
                 BufferedReader reader = new BufferedReader(new FileReader(file));
-                FileWriter fileWriter = new FileWriter(file, false)
         ) {
             String line;
             StringBuilder newContent = new StringBuilder();
@@ -105,7 +102,9 @@ public class MdFiles {
                 newContent.append(line).append("\n");
             }
 
-            fileWriter.write(newContent.toString());
+            FileWriter writer = new FileWriter(file, false);
+            writer.write(newContent.toString());
+            writer.close();
         } catch (IOException e) {
             throw new RuntimeException();
         }
